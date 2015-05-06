@@ -1,3 +1,6 @@
+if (ALT_CMAKE) 
+include(altCMakeLists.cmake)
+else()
 # ======================================================================
 # process this directory's source files
 # ======================================================================
@@ -80,3 +83,4 @@ install( FILES ${PUBLIC_HDRS}
 install( FILES ${DETAIL_HDRS}
          DESTINATION ${product}/${version}/include/cpp0x/detail
 )
+endif()
