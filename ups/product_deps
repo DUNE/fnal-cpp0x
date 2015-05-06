@@ -1,7 +1,7 @@
 # The parent line must be the first non-comment line in the file
 # This line defines the product name and version
-parent cpp0x v1_04_08
-defaultqual e6
+parent cpp0x v1_04_10
+defaultqual e7
 # These optional lines define the installed directories where
 # headers, libraries, and executables will be found
 # Use them only if your product does not conform to the defaults
@@ -17,23 +17,21 @@ fcldir      -
 # The required "product version" line indicates that the remaining lines
 # define product/version pairs
 product		version
-boost		v1_56_0
-gcc		v4_8_2		e5
+boost		v1_57_0
 gcc		v4_9_1		e6
+gcc		v4_9_2		e7
 icc		v14_0_2
-cetbuildtools	v4_05_00	-	only_for_build
+cetbuildtools	v4_10_02	-	only_for_build
 end_product_list
 
 # Matrix of qualifiers versus dependent products
 qualifier	boost		gcc	icc	compiler	notes
-e5:debug	e5:debug	-nq-	-	gcc
-e5:opt		e5:opt		-nq-	-	gcc
-e5:prof		e5:prof		-nq-	-	gcc
 e6:debug	e6:debug	-nq-	-	gcc
 e6:opt		e6:opt		-nq-	-	gcc
 e6:prof		e6:prof		-nq-	-	gcc
-i1:debug	e5:debug	-	i1      icc
-i1:prof         e5:prof         -	i1      icc
+e7:debug	e7:debug	-nq-	-	gcc
+e7:opt		e7:opt		-nq-	-	gcc
+e7:prof		e7:prof		-nq-	-	gcc
 end_qualifier_list
 
 # Local Variables:
