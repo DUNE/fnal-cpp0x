@@ -1,0 +1,169 @@
+// config - C++ compiler vendor/version and C++11 support 
+//
+// Copyright (c) 2014 by Ben Morgan <bmorgan.warwick@gmail.com> 
+// Copyright (c) 2014 by The University of Warwick
+
+#ifndef CPP0X_DETAIL_CONFIG
+#define CPP0X_DETAIL_CONFIG
+
+//----------------------------------------------------------------------
+// Definitions describing compiler used when configuring this cpp0x
+//
+#define CPP0X_CXX_COMPILER_ID "@CMAKE_CXX_COMPILER_ID@"
+#define CPP0X_COMPILER_VERSION "@CMAKE_CXX_COMPILER_VERSION@"
+#define CPP0X_CXX_STDLIB_ID "@CXX_STDLIB_VENDOR@"
+#define CPP0X_CXX_STDLIB_VERSION "@CXX_STDLIB_VERSION@"
+
+// GCC support macros
+#include "cpp0x/compiler_macros.h"
+
+//----------------------------------------------------------------------
+// Non-C++11 features, but required for workarounds
+#cmakedefine CPP0X_HAS_CMATH_FPCLASSIFICATION
+
+//----------------------------------------------------------------------
+// Definitions describing C++11 features supported by compiler/stdlib
+// Wrapped inside GCC's macros specification for C++0x support.
+// This *should* also be defined in Clang and Intel, but needs checking!
+#if defined __GXX_EXPERIMENTAL_CXX0X__
+#cmakedefine CPP0X_HAS_ALGORITHM_ALL_OF
+#cmakedefine CPP0X_HAS_ALGORITHM_ANY_OF
+#cmakedefine CPP0X_HAS_ALGORITHM_COPY_N
+#cmakedefine CPP0X_HAS_ALGORITHM_FIND_IF_NOT
+#cmakedefine CPP0X_HAS_ALGORITHM_IS_PARTITIONED
+#cmakedefine CPP0X_HAS_ALGORITHM_IS_SORTED
+#cmakedefine CPP0X_HAS_ALGORITHM_MIN_MAX
+#cmakedefine CPP0X_HAS_ALGORITHM_NONE_OF
+#cmakedefine CPP0X_HAS_ALGORITHM_PARTITION_POINT
+#cmakedefine CPP0X_HAS_ALGORITHM_SHUFFLE
+#cmakedefine CPP0X_HAS_ARRAY_HDR
+#cmakedefine CPP0X_HAS_AUTO
+#cmakedefine CPP0X_HAS_AUTO_RET_TYPE
+#cmakedefine CPP0X_HAS_CLASS_OVERRIDE
+#cmakedefine CPP0X_HAS_CMATH_C99
+#cmakedefine CPP0X_HAS_CONSTEXPR_FUNCTIONS
+#cmakedefine CPP0X_HAS_CONSTEXPR_VARIABLES
+#cmakedefine CPP0X_HAS_CSTDINT_HDR
+#cmakedefine CPP0X_HAS_DECLTYPE
+#cmakedefine CPP0X_HAS_FCTN_TEMPLATE_DEFAULT_ARGS
+#cmakedefine CPP0X_HAS_EXPLICIT_CONVERSION_OPERATORS
+#cmakedefine CPP0X_HAS_FUNCTIONAL_BIND
+#cmakedefine CPP0X_HAS_FUNCTIONAL_FUNCTION
+#cmakedefine CPP0X_HAS_FUNCTIONAL_HASH
+#cmakedefine CPP0X_HAS_FUNCTIONAL_MEM_FN
+#cmakedefine CPP0X_HAS_FUNCTIONAL_REFERENCE_WRAPPER
+#cmakedefine CPP0X_HAS_INITIALIZER_LIST
+#cmakedefine CPP0X_HAS_ITERATOR_RANGE
+#cmakedefine CPP0X_HAS_LAMBDAS
+#cmakedefine CPP0X_HAS_LONG_LONG
+#cmakedefine CPP0X_HAS_MEMORY_SHARED_PTR
+#cmakedefine CPP0X_HAS_MEMORY_UNIQUE_PTR
+#cmakedefine CPP0X_HAS_NOEXCEPT
+#cmakedefine CPP0X_HAS_NULLPTR
+#cmakedefine CPP0X_HAS_NUMERIC_IOTA
+#cmakedefine CPP0X_HAS_RANDOM_HDR
+#cmakedefine CPP0X_HAS_REGEX_HDR
+#cmakedefine CPP0X_HAS_RVALUE_REFERENCES
+#cmakedefine CPP0X_HAS_SIZEOF_MEMBER
+#cmakedefine CPP0X_HAS_STATIC_ASSERT
+#cmakedefine CPP0X_HAS_STRING_NUMERIC_CONVERSIONS
+#cmakedefine CPP0X_HAS_SYSTEM_ERROR_HDR
+#cmakedefine CPP0X_HAS_TUPLE_HDR
+#cmakedefine CPP0X_HAS_TYPE_TRAITS_HDR
+#cmakedefine CPP0X_HAS_UTILITY_DECLVAL
+#cmakedefine CPP0X_HAS_VARIADIC_TEMPLATES
+#endif
+
+// ----------------------------------------------------------------------
+// Core feature workarounds:
+// ----------------------------------------------------------------------
+
+// --- CPP0X_HAS_CONSTEXPR_FUNCTIONS
+#if defined CPP0X_HAS_CONSTEXPR_FUNCTIONS
+  #define CONSTEXPR_FCTN constexpr
+#else
+  #define CONSTEXPR_FCTN
+  #define constexpr const
+#endif
+
+// --- CPP0X_HAS_CONSTEXPR_VARIABLES
+#if defined CPP0X_HAS_CONSTEXPR_VARIABLES
+  #define CONSTEXPR_VAR constexpr
+#else
+  #define CONSTEXPR_VAR const
+  #define constexpr const
+#endif
+
+// --- CPP0X_HAS_EXPLICIT_CONVERSION_OPERATORS
+#if defined CPP0X_HAS_EXPLICIT_CONVERSION_OPERATORS
+  #define EXPLICIT_CONV_OP explicit
+#else
+  #define EXPLICIT_CONV_OP
+#endif
+
+// --- CPP0X_HAS_NOEXCEPT
+#if defined CPP0X_HAS_NOEXCEPT
+
+#elif ! defined noexcept
+  #define noexcept throw()
+#endif
+
+// --- CPP0X_HAS_NULLPTR
+#if defined CPP0X_HAS_NULLPTR
+
+#else
+  #include "cpp0x/detail/nullptr"
+#endif
+
+// --- CPP0X_HAS_STATIC_ASSERT
+#if defined CPP0X_HAS_STATIC_ASSERT
+  #define STATIC_ASSERT(pred,mesg) static_assert(pred,mesg)
+#else
+  #include <boost/static_assert.hpp>
+  #define STATIC_ASSERT(pred,mesg) BOOST_STATIC_ASSERT((pred))
+#endif
+
+// ----------------------------------------------------------------------
+// If library-based workarounds are needed, ensure they are possible:
+// ----------------------------------------------------------------------
+
+#if ! defined CPP0X_HAS_STATIC_ASSERT \
+ || ! defined CPP0X_HAS_ALGORITHM_ALL_OF \
+ || ! defined CPP0X_HAS_ALGORITHM_ANY_OF \
+ || ! defined CPP0X_HAS_ALGORITHM_COPY_N \
+ || ! defined CPP0X_HAS_ALGORITHM_FIND_IF_NOT \
+ || ! defined CPP0X_HAS_ALGORITHM_IS_PARTITIONED \
+ || ! defined CPP0X_HAS_ALGORITHM_IS_SORTED \
+ || ! defined CPP0X_HAS_ALGORITHM_MIN_MAX \
+ || ! defined CPP0X_HAS_ALGORITHM_NONE_OF \
+ || ! defined CPP0X_HAS_ALGORITHM_PARTITION_POINT \
+ || ! defined CPP0X_HAS_ALGORITHM_SHUFFLE \
+ || ! defined CPP0X_HAS_ARRAY_HDR \
+ || ! defined CPP0X_HAS_CSTDDEF_NULLPTR_T \
+ || ! defined CPP0X_HAS_CSTDINT_HDR \
+ || ! defined CPP0X_HAS_FUNCTIONAL_BIND \
+ || ! defined CPP0X_HAS_FUNCTIONAL_FUNCTION \
+ || ! defined CPP0X_HAS_FUNCTIONAL_HASH \
+ || ! defined CPP0X_HAS_FUNCTIONAL_MEM_FN \
+ || ! defined CPP0X_HAS_FUNCTIONAL_REFERENCE_WRAPPER \
+ || ! defined CPP0X_HAS_ITERATOR_RANGE \
+ || ! defined CPP0X_HAS_MEMORY_SHARED_PTR \
+ || ! defined CPP0X_HAS_MEMORY_UNIQUE_PTR \
+ || ! defined CPP0X_HAS_NUMERIC_IOTA \
+ || ! defined CPP0X_HAS_RANDOM_HDR \
+ || ! defined CPP0X_HAS_REGEX_HDR \
+ || ! defined CPP0X_HAS_STRING_NUMERIC_CONVERSIONS \
+ || ! defined CPP0X_HAS_SYSTEM_ERROR_HDR \
+ || ! defined CPP0X_HAS_TUPLE_HDR \
+ || ! defined CPP0X_HAS_TYPE_TRAITS_HDR \
+ || ! defined CPP0X_HAS_UTILITY_DECLVAL \
+
+  #include <boost/version.hpp>
+  #if BOOST_VERSION < 104200
+    #error "boost library version is too old; can't provide library workarounds"
+  #endif
+#endif
+
+// ======================================================================
+#endif
+
